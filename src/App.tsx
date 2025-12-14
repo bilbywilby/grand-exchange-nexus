@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Swords, LayoutGrid, Wifi, WifiOff, TrendingUp, Heart, Leaf, Settings, Menu, Hammer, Zap, CookingPot, Scissors } from 'lucide-react';
+import { Swords, LayoutGrid, Wifi, WifiOff, TrendingUp, Heart, Leaf, Settings, Menu, Hammer, Zap, CookingPot, Scissors, Feather } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
