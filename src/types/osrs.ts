@@ -48,4 +48,4 @@ export interface GraphData {
   daily: { [timestamp: string]: number };
   average: { [timestamp: string]: number };
 }
-export interface GraphApiResponse extends GraphData {}
+export type GraphApiResponse = GraphData;

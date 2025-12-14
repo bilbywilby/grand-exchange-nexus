@@ -1,4 +1,10 @@
 import { Swords, Shield, Gem, CookingPot, Feather, Axe, Pickaxe, Droplets, Leaf, ArrowUp, Zap, BookOpen, Skull } from 'lucide-react';
+import type {
+  CategoryApiResponse,
+  ItemsApiResponse,
+  ItemDetailApiResponse,
+  GraphApiResponse
+} from '@/types/osrs';
 export const OSRS_CATEGORIES = [
   { id: 0, name: "Miscellaneous", icon: Feather },
   { id: 1, name: "Ammo", icon: ArrowUp },
@@ -43,7 +49,7 @@ export const OSRS_CATEGORIES = [
   // The list above is for display purposes, but all API calls will use category=1 for OSRS.
 ];
 export const OSRS_SINGLE_CATEGORY_ID = 1;
-async function fetcher<T>(url: string): Promise<T> {
+async function fetcher(url: string): Promise<any> {
   const res = await fetch(url);
   if (!res.ok) {
     const errorBody = await res.json().catch(() => ({ error: 'Failed to parse error response' }));
@@ -55,7 +61,11 @@ async function fetcher<T>(url: string): Promise<T> {
   }
   return json.data;
 }
-export const getCategory = (id: number) => fetcher(`/api/ge/category?id=${id}`);
-export const getItems = (id: number, alpha: string, page: number) => fetcher(`/api/ge/items?id=${id}&alpha=${alpha}&page=${page}`);
-export const getItemDetail = (id: number) => fetcher(`/api/ge/detail?id=${id}`);
-export const getGraph = (id: number) => fetcher(`/api/ge/graph?id=${id}`);
+export const getCategory = async (id: number): Promise<CategoryApiResponse> =>
+  fetcher(`/api/ge/category?id=${id}`);
+export const getItems = async (id: number, alpha: string, page: number): Promise<ItemsApiResponse> =>
+  fetcher(`/api/ge/items?id=${id}&alpha=${alpha}&page=${page}`);
+export const getItemDetail = async (id: number): Promise<ItemDetailApiResponse> =>
+  fetcher(`/api/ge/detail?id=${id}`);
+export const getGraph = async (id: number): Promise<GraphApiResponse> =>
+  fetcher(`/api/ge/graph?id=${id}`);
