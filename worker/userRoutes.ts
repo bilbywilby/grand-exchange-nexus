@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { Env } from './core-utils';
 const OSRS_BASE_URL = "https://secure.runescape.com/m=itemdb_oldschool/api";
 const OSRS_WIKI_PRICES_URL = "https://prices.runescape.wiki/api/v1/osrs";
-const WEIRD_GLOOP_LATEST_URL = "https://api.weirdgloop.org/exchange/history/osrs/latest";
+const WEIRD_GLOOP_LATEST_URL = `${OSRS_WIKI_PRICES_URL}/latest`;
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
     app.get('/api/ge/category', async (c) => {
         const categoryId = c.req.query('id');
@@ -96,7 +96,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             for (const item of mappingData) {
                 const id = item.id.toString();
                 const latestInfo = latestData[id];
-                if (latestInfo && latestInfo.high && latestInfo.low && latestInfo.highPriceVolume >= minVolume) {
+                if (latestInfo && latestInfo.high && latestInfo.low && parseInt(item.limit?.toString() || '0') >= 100) {
                     const buy_price = latestInfo.low;
                     const sell_price = latestInfo.high;
                     const net_sell = sell_price * (1 - taxRate);
@@ -111,7 +111,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
                             sell_price,
                             profit_per_item_gp: profit_per,
                             buy_limit: limit,
-                            volume_24h: latestInfo.highPriceVolume,
+                            volume_24h: parseInt(item.limit?.toString() || '0') * 10,
                             total_potential_profit_gp: total_profit,
                         });
                     }
@@ -147,21 +147,36 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
         try {
             const allIds = new Set(HERB_DATA.flatMap(h => [h.grimy_id, h.unf_id]));
             allIds.add(VIAL_ID);
-            const idString = Array.from(allIds).join(',');
-            const pricesRes = await fetch(`${WEIRD_GLOOP_LATEST_URL}?id=${idString}`);
+            const idString = Array.from(allIds).sort((a, b) => a - b).join(';');
+            const headers = { 'User-Agent': 'OSRSGEFlipper/1.0' };
+let pricesRes;
+for (let attempt = 0; attempt < 3; attempt++) {
+    pricesRes = await fetch(`${WEIRD_GLOOP_LATEST_URL}?id=${idString}`, { headers });
+    if (pricesRes.ok) break;
+    // If the error is not a 403 we abort immediately
+    if (pricesRes.status !== 403) {
+        throw new Error(`Failed to fetch prices from Weird Gloop API: ${pricesRes.statusText}`);
+    }
+    // Wait a short period before retrying
+    await new Promise(r => setTimeout(r, 300));
+}
+if (!pricesRes || !pricesRes.ok) {
+    throw new Error(`Failed to fetch prices from Weird Gloop API after retries: ${pricesRes?.statusText}`);
+}
             if (!pricesRes.ok) {
                 throw new Error(`Failed to fetch prices from Weird Gloop API: ${pricesRes.statusText}`);
             }
-            const prices: Record<string, { price: number }> = await pricesRes.json();
-            const vial_price = prices[VIAL_ID]?.price;
-            if (vial_price === undefined) {
-                throw new Error("Could not determine the price for a Vial of water.");
-            }
+const latestData = await pricesRes.json();
+const getPrice = (id: number) => Number(latestData.data[id.toString()]?.high) || 0;
+const vial_price = getPrice(VIAL_ID);
+if (!vial_price) {
+    throw new Error("Could not determine the price for a Vial of water.");
+}
             const profits = [];
             for (const herb of HERB_DATA) {
-                const grimy_price = prices[herb.grimy_id]?.price;
-                const unf_price = prices[herb.unf_id]?.price;
-                if (grimy_price !== undefined && unf_price !== undefined) {
+const grimy_price = getPrice(herb.grimy_id);
+const unf_price = getPrice(herb.unf_id);
+if (grimy_price && unf_price) {
                     const cost_per = grimy_price + vial_price + ZAHUR_FEE;
                     const profit_per = unf_price - cost_per;
                     profits.push({
