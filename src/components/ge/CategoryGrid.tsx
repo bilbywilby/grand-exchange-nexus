@@ -1,7 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { OSRS_CATEGORIES } from '@/lib/api';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 interface Category {
   id: number;
   name: string;

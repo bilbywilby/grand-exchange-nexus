@@ -73,3 +73,16 @@ export interface HerbProfit {
 export interface HerbProfitsResponse {
   data: HerbProfit[];
 }
+export interface SkillProfit {
+  name: string;
+  profitPer: number;
+  gpPerHr: number;
+  costPer: number;
+  revenuePer: number;
+  productId: number;
+  limit: number;
+  notes: string;
+}
+export interface SkillProfitsResponse {
+  data: SkillProfit[];
+}

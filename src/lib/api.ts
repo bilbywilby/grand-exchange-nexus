@@ -5,7 +5,8 @@ import type {
   ItemDetailApiResponse,
   GraphApiResponse,
   FlipOpportunitiesResponse,
-  HerbProfitsResponse
+  HerbProfitsResponse,
+  SkillProfitsResponse
 } from '@/types/osrs';
 export const OSRS_CATEGORIES = [
   { id: 0, name: "Miscellaneous", icon: Feather },
@@ -46,9 +47,6 @@ export const OSRS_CATEGORIES = [
   { id: 35, name: "Tools and containers", icon: Axe },
   { id: 36, name: "Woodcutting product", icon: Axe },
   { id: 37, name: "Pocket items", icon: Gem },
-  // OSRS specific categories are limited, RS3 has more. OSRS only has one main category.
-  // For OSRS, we use category=1 for everything.
-  // The list above is for display purposes, but all API calls will use category=1 for OSRS.
 ];
 export const OSRS_SINGLE_CATEGORY_ID = 1;
 async function fetcher(url: string): Promise<any> {
@@ -73,5 +71,10 @@ export const getGraph = async (id: number): Promise<GraphApiResponse> =>
   fetcher(`/api/ge/graph?id=${id}`);
 export const getFlipOpportunities = async (minVolume=100000, taxRate=0.01, topN=100): Promise<FlipOpportunitiesResponse> =>
   fetcher(`/api/flip/opportunities?minVolume=${minVolume}&taxRate=${taxRate}&topN=${topN}`);
-export const getHerbloreProfits = async (): Promise<HerbProfitsResponse> => 
+export const getHerbloreProfits = async (): Promise<HerbProfitsResponse> =>
   fetcher('/api/herblore/profits');
+export const getSmithingProfits = async (): Promise<SkillProfitsResponse> => fetcher('/api/smithing/profits');
+export const getFletchingProfits = async (): Promise<SkillProfitsResponse> => fetcher('/api/fletching/profits');
+export const getRunecraftingProfits = async (): Promise<SkillProfitsResponse> => fetcher('/api/runecrafting/profits');
+export const getCookingProfits = async (): Promise<SkillProfitsResponse> => fetcher('/api/cooking/profits');
+export const getCraftingProfits = async (): Promise<SkillProfitsResponse> => fetcher('/api/crafting/profits');
