@@ -6,11 +6,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PriceChart } from '@/components/ge/PriceChart';
-import { ArrowLeft, Terminal, TrendingDown, TrendingUp, Minus, Heart } from 'lucide-react';
+import { ArrowLeft, Terminal, TrendingDown, TrendingUp, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ItemDetailApiResponse, GraphApiResponse } from '@/types/osrs';
-import { useFavorites } from '@/lib/favorites';
-import { cn } from '@/lib/utils';
 const TrendIndicator = ({ trend, change }: { trend: string; change: string }) => {
   const isPositive = trend === 'positive';
   const isNegative = trend === 'negative';
@@ -25,7 +23,6 @@ const TrendIndicator = ({ trend, change }: { trend: string; change: string }) =>
 };
 export function ItemDetailPage() {
   const { itemId } = useParams();
-  const { toggleFavorite, isFavorited } = useFavorites();
   const parsedItemId = parseInt(itemId || '0', 10);
   const { data: detailData, isLoading: isDetailLoading, error: detailError } = useQuery<ItemDetailApiResponse>({
     queryKey: ['itemDetail', parsedItemId],
@@ -41,7 +38,7 @@ export function ItemDetailPage() {
   if (isDetailLoading) {
     return (
       <AppLayout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12">
+        <div className="max-w-4xl mx-auto p-4">
           <Skeleton className="h-8 w-32 mb-8" />
           <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-1">
@@ -61,19 +58,17 @@ export function ItemDetailPage() {
   if (detailError || !item) {
     return (
       <AppLayout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12">
-          <Alert variant="destructive" className="bg-red-900/20 border-red-500 text-red-300 max-w-2xl mx-auto">
-            <Terminal className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{detailError?.message || 'Item not found.'}</AlertDescription>
-          </Alert>
-        </div>
+        <Alert variant="destructive" className="bg-red-900/20 border-red-500 text-red-300 max-w-2xl mx-auto">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{detailError?.message || 'Item not found.'}</AlertDescription>
+        </Alert>
       </AppLayout>
     );
   }
   return (
     <AppLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12 w-full">
+      <div className="max-w-5xl mx-auto p-4 w-full">
         <Button asChild variant="ghost" className="mb-6 hover:bg-slate-800">
           <Link to="/category/1"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Catalogue</Link>
         </Button>
@@ -87,18 +82,6 @@ export function ItemDetailPage() {
                 <span className={`mt-4 text-xs font-semibold px-2 py-1 rounded ${item.members === 'true' ? 'bg-yellow-900/50 text-yellow-300' : 'bg-slate-700 text-slate-300'}`}>
                   {item.members === 'true' ? 'Members' : 'Free-to-Play'}
                 </span>
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  className="mt-4 w-full hover:bg-yellow-500/20 group"
-                  onClick={() => toggleFavorite(parsedItemId)}
-                >
-                  <Heart className={cn(
-                    "mr-2 h-5 w-5 text-slate-400 transition-all",
-                    isFavorited(parsedItemId) ? 'text-yellow-400 fill-current' : 'group-hover:text-yellow-400'
-                  )} />
-                  {isFavorited(parsedItemId) ? 'Favorited' : 'Add to Favorites'}
-                </Button>
               </CardContent>
             </Card>
           </div>

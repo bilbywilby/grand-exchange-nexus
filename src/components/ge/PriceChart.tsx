@@ -7,16 +7,11 @@ const formatNumber = (num: number) => {
   if (num >= 1_000) return `${(num / 1_000).toFixed(1)}k`;
   return num.toString();
 };
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: any[];
-  label?: string | number;
-}
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-slate-800 p-4 border border-slate-700 rounded-lg shadow-lg">
-        <p className="label text-slate-300">{`${format(new Date(label as number), 'MMM d, yyyy')}`}</p>
+        <p className="label text-slate-300">{`${format(new Date(label), 'MMM d, yyyy')}`}</p>
         {payload.map((p, i) => (
           <p key={i} style={{ color: p.color }}>
             {`${p.name}: ${formatNumber(p.value)} gp`}
@@ -41,13 +36,13 @@ export function PriceChart({ data }: { data: GraphData }) {
       <ResponsiveContainer>
         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
-          <XAxis
-            dataKey="date"
+          <XAxis 
+            dataKey="date" 
             tickFormatter={(timestamp) => format(new Date(timestamp), 'MMM d')}
             stroke="#94a3b8"
             tick={{ fill: '#94a3b8', fontSize: 12 }}
           />
-          <YAxis
+          <YAxis 
             tickFormatter={formatNumber}
             stroke="#94a3b8"
             tick={{ fill: '#94a3b8', fontSize: 12 }}

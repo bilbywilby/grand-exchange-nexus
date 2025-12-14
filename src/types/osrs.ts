@@ -48,41 +48,4 @@ export interface GraphData {
   daily: { [timestamp: string]: number };
   average: { [timestamp: string]: number };
 }
-export type GraphApiResponse = GraphData;
-export interface FlipOpportunity {
-  id: number;
-  name: string;
-  buy_price: number;
-  sell_price: number;
-  profit_per_item_gp: number;
-  buy_limit: number;
-  volume_24h: number;
-  total_potential_profit_gp: number;
-}
-export interface FlipOpportunitiesResponse {
-  data: FlipOpportunity[];
-}
-export interface HerbProfit {
-  name: string;
-  profit_per_potion: number;
-  cost_per_potion: number;
-  sell_price_unf: number;
-  grimy_id: number;
-  unf_id: number;
-}
-export interface HerbProfitsResponse {
-  data: HerbProfit[];
-}
-export interface SkillProfit {
-  name: string;
-  profitPer: number;
-  gpPerHr: number;
-  costPer: number;
-  revenuePer: number;
-  productId: number;
-  limit: number;
-  notes: string;
-}
-export interface SkillProfitsResponse {
-  data: SkillProfit[];
-}
+export interface GraphApiResponse extends GraphData {}
