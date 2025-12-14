@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Swords, LayoutGrid, Wifi, WifiOff, TrendingUp } from 'lucide-react';
+import { Swords, LayoutGrid, Wifi, WifiOff, TrendingUp, Heart } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
@@ -58,6 +58,17 @@ const NavContent = () => (
     >
       <TrendingUp className="h-4 w-4" />
       Flipper
+    </NavLink>
+    <NavLink
+      to="/favorites"
+      className={({ isActive }) =>
+        `flex items-center gap-3 rounded-lg px-3 py-2 text-slate-300 transition-all hover:text-white ${
+          isActive ? 'bg-slate-800 text-white' : ''
+        }`
+      }
+    >
+      <Heart className="h-4 w-4" />
+      Favorites
     </NavLink>
   </>
 );

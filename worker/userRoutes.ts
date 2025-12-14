@@ -88,8 +88,9 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             ]);
             if (!mappingRes.ok) throw new Error(`Failed to fetch mapping data: ${mappingRes.statusText}`);
             if (!latestRes.ok) throw new Error(`Failed to fetch latest prices: ${latestRes.statusText}`);
-            const mappingData = await mappingRes.json();
-            const latestData = (await latestRes.json()).data;
+            const mappingData: any[] = await mappingRes.json();
+            const latestRaw: { data: Record<string, any> } = await latestRes.json();
+            const latestData = latestRaw.data;
             const opportunities = [];
             for (const item of mappingData) {
                 const id = item.id.toString();

@@ -3,6 +3,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import type { Item } from '@/types/osrs';
+import { Heart } from 'lucide-react';
+import { useFavorites } from '@/lib/favorites';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 const formatPrice = (price: string | number) => {
   if (typeof price === 'number') return price.toLocaleString();
   if (typeof price !== 'string') return 'N/A';
@@ -23,6 +27,7 @@ const formatPrice = (price: string | number) => {
   return (num * multiplier).toLocaleString();
 };
 export function ItemGrid({ items, isLoading }: { items: Item[] | undefined, isLoading: boolean }) {
+  const { toggleFavorite, isFavorited } = useFavorites();
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -53,7 +58,22 @@ export function ItemGrid({ items, isLoading }: { items: Item[] | undefined, isLo
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
+          className="relative"
         >
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 z-10 h-8 w-8 rounded-full bg-slate-800/50 hover:bg-slate-700/70"
+            onClick={(e) => {
+              e.preventDefault();
+              toggleFavorite(item.id);
+            }}
+          >
+            <Heart className={cn(
+              "h-4 w-4 text-slate-400 transition-all",
+              isFavorited(item.id) ? 'text-yellow-400 fill-current' : 'group-hover:text-yellow-400'
+            )} />
+          </Button>
           <Link to={`/item/${item.id}`} className="block group">
             <Card className="bg-slate-900 border-slate-800 h-full hover:border-yellow-400 transition-all duration-300 transform hover:-translate-y-1">
               <CardContent className="p-4 flex flex-col items-center text-center justify-between h-full">
