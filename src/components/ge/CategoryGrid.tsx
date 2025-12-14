@@ -1,8 +1,17 @@
-import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { OSRS_SINGLE_CATEGORY_ID } from '@/lib/api';
-export function CategoryGrid({ categories }) {
+import { OSRS_CATEGORIES } from '@/lib/api';
+import { Button } from '../ui/button';
+interface Category {
+  id: number;
+  name: string;
+  icon: React.ElementType;
+}
+interface Props {
+  categories: Category[];
+  onCategoryClick?: () => void;
+}
+export function CategoryGrid({ categories, onCategoryClick }: Props) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -28,17 +37,14 @@ export function CategoryGrid({ categories }) {
     >
       {categories.map((category) => (
         <motion.div key={category.id} variants={itemVariants}>
-          <Link to={`/category/${category.id}?alpha=a&page=1`} className="block group">
-            <Card className="bg-slate-900 border-slate-800 hover:border-yellow-400 transition-all duration-300 hover:shadow-lg hover:shadow-yellow-400/10 transform hover:-translate-y-1">
+          <Button variant="ghost" className="block group h-full w-full p-0" onClick={onCategoryClick}>
+            <Card className="bg-slate-900 border-slate-800 hover:border-yellow-400 transition-all duration-300 hover:shadow-lg hover:shadow-yellow-400/10 transform hover:-translate-y-1 w-full h-full">
               <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-                {(() => {
-  const Icon = category.icon;
-  return <Icon className="h-8 w-8 text-yellow-400 mb-4 transition-transform group-hover:scale-110" />;
-})()}
+                <category.icon className="h-8 w-8 text-yellow-400 mb-4 transition-transform group-hover:scale-110" />
                 <h3 className="text-base font-semibold text-white">{category.name}</h3>
               </CardContent>
             </Card>
-          </Link>
+          </Button>
         </motion.div>
       ))}
     </motion.div>

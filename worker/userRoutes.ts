@@ -149,34 +149,29 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             allIds.add(VIAL_ID);
             const idString = Array.from(allIds).sort((a, b) => a - b).join(';');
             const headers = { 'User-Agent': 'OSRSGEFlipper/1.0' };
-let pricesRes;
-for (let attempt = 0; attempt < 3; attempt++) {
-    pricesRes = await fetch(`${WEIRD_GLOOP_LATEST_URL}?id=${idString}`, { headers });
-    if (pricesRes.ok) break;
-    // If the error is not a 403 we abort immediately
-    if (pricesRes.status !== 403) {
-        throw new Error(`Failed to fetch prices from Weird Gloop API: ${pricesRes.statusText}`);
-    }
-    // Wait a short period before retrying
-    await new Promise(r => setTimeout(r, 300));
-}
-if (!pricesRes || !pricesRes.ok) {
-    throw new Error(`Failed to fetch prices from Weird Gloop API after retries: ${pricesRes?.statusText}`);
-}
-            if (!pricesRes.ok) {
-                throw new Error(`Failed to fetch prices from Weird Gloop API: ${pricesRes.statusText}`);
+            let pricesRes;
+            for (let attempt = 0; attempt < 3; attempt++) {
+                pricesRes = await fetch(`${WEIRD_GLOOP_LATEST_URL}?id=${idString}`, { headers });
+                if (pricesRes.ok) break;
+                if (pricesRes.status !== 403) {
+                    throw new Error(`Failed to fetch prices from Weird Gloop API: ${pricesRes.statusText}`);
+                }
+                await new Promise(r => setTimeout(r, 300));
             }
-const latestData = await pricesRes.json();
-const getPrice = (id: number) => Number(latestData.data[id.toString()]?.high) || 0;
-const vial_price = getPrice(VIAL_ID);
-if (!vial_price) {
-    throw new Error("Could not determine the price for a Vial of water.");
-}
+            if (!pricesRes || !pricesRes.ok) {
+                throw new Error(`Failed to fetch prices from Weird Gloop API after retries: ${pricesRes?.statusText}`);
+            }
+            const latestData: { data: Record<string, { high: string | number } | undefined> } = await pricesRes.json();
+            const getPrice = (id: number): number => Number(latestData.data[id.toString()]?.high ?? 0);
+            const vial_price = getPrice(VIAL_ID);
+            if (vial_price === 0) {
+                throw new Error("Could not determine the price for a Vial of water.");
+            }
             const profits = [];
             for (const herb of HERB_DATA) {
-const grimy_price = getPrice(herb.grimy_id);
-const unf_price = getPrice(herb.unf_id);
-if (grimy_price && unf_price) {
+                const grimy_price = getPrice(herb.grimy_id);
+                const unf_price = getPrice(herb.unf_id);
+                if (grimy_price && unf_price) {
                     const cost_per = grimy_price + vial_price + ZAHUR_FEE;
                     const profit_per = unf_price - cost_per;
                     profits.push({

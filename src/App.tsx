@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Swords, LayoutGrid, Wifi, WifiOff, TrendingUp, Heart, Leaf, Settings, Menu, Hammer, Zap, CookingPot, Scissors, Feather } from 'lucide-react';
+import { Swords, LayoutGrid, Wifi, WifiOff, TrendingUp, Heart, Leaf, Settings, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -13,12 +13,7 @@ import { HerbloreTable } from '@/components/ge/HerbloreTable';
 import { FavoritesGrid } from '@/components/ge/FavoritesGrid';
 import { SettingsPanel } from '@/components/ge/SettingsPanel';
 import { Toaster } from '@/components/ui/sonner';
-import { SmithingTable } from '@/components/ge/SmithingTable';
-import { FletchingTable } from '@/components/ge/FletchingTable';
-import { RunecraftingTable } from '@/components/ge/RunecraftingTable';
-import { CookingTable } from '@/components/ge/CookingTable';
-import { CraftingTable } from '@/components/ge/CraftingTable';
-type Tab = 'dashboard' | 'catalogue' | 'flipper' | 'herblore' | 'favorites' | 'settings' | 'smithing' | 'fletching' | 'runecrafting' | 'cooking' | 'crafting';
+type Tab = 'dashboard' | 'catalogue' | 'flipper' | 'herblore' | 'favorites' | 'settings';
 const ConnectionStatus = () => {
   const { isSuccess, isError } = useQuery({
     queryKey: ['health-check'],
@@ -43,11 +38,6 @@ const NavContent = ({ activeTab, onTabChange }: { activeTab: Tab, onTabChange: (
     { id: 'catalogue', icon: Swords, label: 'Catalogue' },
     { id: 'flipper', icon: TrendingUp, label: 'Flipper' },
     { id: 'herblore', icon: Leaf, label: 'Herblore' },
-    { id: 'smithing', icon: Hammer, label: 'Smithing' },
-    { id: 'fletching', icon: Feather, label: 'Fletching' },
-    { id: 'runecrafting', icon: Zap, label: 'Runecrafting' },
-    { id: 'cooking', icon: CookingPot, label: 'Cooking' },
-    { id: 'crafting', icon: Scissors, label: 'Crafting' },
     { id: 'favorites', icon: Heart, label: 'Favorites' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ] as const;
@@ -75,6 +65,7 @@ export default function App() {
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [flipperSettings, setFlipperSettings] = useState({ minVolume: 100000, taxRate: 0.01, topN: 100 });
   const [herbloreBatch, setHerbloreBatch] = useState(1000);
+  const isMobile = useIsMobile();
   const renderContent = () => {
     switch (currentTab) {
       case 'dashboard':
@@ -85,16 +76,6 @@ export default function App() {
         return <FlipperTable settings={flipperSettings} onItemClick={setSelectedItemId} />;
       case 'herblore':
         return <HerbloreTable batchQuantity={herbloreBatch} onItemClick={setSelectedItemId} />;
-      case 'smithing':
-        return <SmithingTable batchQuantity={herbloreBatch} onItemClick={setSelectedItemId} />;
-      case 'fletching':
-        return <FletchingTable batchQuantity={herbloreBatch} onItemClick={setSelectedItemId} />;
-      case 'runecrafting':
-        return <RunecraftingTable batchQuantity={herbloreBatch} onItemClick={setSelectedItemId} />;
-      case 'cooking':
-        return <CookingTable batchQuantity={herbloreBatch} onItemClick={setSelectedItemId} />;
-      case 'crafting':
-        return <CraftingTable batchQuantity={herbloreBatch} onItemClick={setSelectedItemId} />;
       case 'favorites':
         return <FavoritesGrid onItemClick={setSelectedItemId} />;
       case 'settings':
@@ -108,7 +89,6 @@ export default function App() {
         return <DashboardContent onCategoryClick={() => setCurrentTab('catalogue')} />;
     }
   };
-  const isMobile = useIsMobile();
   return (
     <>
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] bg-slate-950 text-white">
@@ -121,7 +101,7 @@ export default function App() {
                   <span>GE Nexus</span>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1">
                 <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
                   <NavContent activeTab={currentTab} onTabChange={setCurrentTab} />
                 </nav>
