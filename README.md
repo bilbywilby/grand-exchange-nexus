@@ -1,6 +1,6 @@
 # Grand Exchange Nexus
 
-[![Deploy to Cloudflare][cloudflarebutton]]
+[![Deploy to Cloudflare][![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/bilbywilby/grand-exchange-nexus)]
 
 A premium, visually immersive interface for the Old School RuneScape (OSRS) Grand Exchange. This application provides a comprehensive item database and price analytics tool, leveraging the official OSRS Grand Exchange API. Transform raw JSON data into an immersive, game-authentic yet modern UI with a 'Dark Fantasy' aesthetic—deep slate backgrounds, rune-gold accents, glassmorphism panels, and crisp typography.
 
@@ -89,7 +89,7 @@ Or manually:
 1. Build: `bun run build`
 2. Deploy: `wrangler deploy`
 
-[![Deploy to Cloudflare][cloudflarebutton]]
+[![Deploy to Cloudflare][![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/bilbywilby/grand-exchange-nexus)]
 
 **Custom Domain**: Update `wrangler.jsonc` or Wrangler CLI flags.
 
