@@ -62,3 +62,14 @@ export interface FlipOpportunity {
 export interface FlipOpportunitiesResponse {
   data: FlipOpportunity[];
 }
+export interface HerbProfit {
+  name: string;
+  profit_per_potion: number;
+  cost_per_potion: number;
+  sell_price_unf: number;
+  grimy_id: number;
+  unf_id: number;
+}
+export interface HerbProfitsResponse {
+  data: HerbProfit[];
+}

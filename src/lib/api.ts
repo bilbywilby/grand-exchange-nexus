@@ -4,7 +4,8 @@ import type {
   ItemsApiResponse,
   ItemDetailApiResponse,
   GraphApiResponse,
-  FlipOpportunitiesResponse
+  FlipOpportunitiesResponse,
+  HerbProfitsResponse
 } from '@/types/osrs';
 export const OSRS_CATEGORIES = [
   { id: 0, name: "Miscellaneous", icon: Feather },
@@ -72,3 +73,5 @@ export const getGraph = async (id: number): Promise<GraphApiResponse> =>
   fetcher(`/api/ge/graph?id=${id}`);
 export const getFlipOpportunities = async (minVolume=100000, taxRate=0.01, topN=100): Promise<FlipOpportunitiesResponse> =>
   fetcher(`/api/flip/opportunities?minVolume=${minVolume}&taxRate=${taxRate}&topN=${topN}`);
+export const getHerbloreProfits = async (): Promise<HerbProfitsResponse> => 
+  fetcher('/api/herblore/profits');

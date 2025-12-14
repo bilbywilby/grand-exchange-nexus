@@ -16,6 +16,7 @@ import { CategoryPage } from '@/pages/CategoryPage';
 import { ItemDetailPage } from '@/pages/ItemDetailPage';
 import { FlipperPage } from '@/pages/FlipperPage';
 import { FavoritesPage } from '@/pages/FavoritesPage';
+import { HerblorePage } from '@/pages/HerblorePage';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -48,6 +49,11 @@ const router = createBrowserRouter([
   {
     path: "/favorites",
     element: <FavoritesPage />,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/herblore",
+    element: <HerblorePage />,
     errorElement: <RouteErrorBoundary />,
   },
 ]);
