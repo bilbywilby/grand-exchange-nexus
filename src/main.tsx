@@ -14,6 +14,7 @@ import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
 import { CategoryPage } from '@/pages/CategoryPage';
 import { ItemDetailPage } from '@/pages/ItemDetailPage';
+import { FlipperPage } from '@/pages/FlipperPage';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -36,6 +37,11 @@ const router = createBrowserRouter([
   {
     path: "/item/:itemId",
     element: <ItemDetailPage />,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/flipper",
+    element: <FlipperPage />,
     errorElement: <RouteErrorBoundary />,
   },
 ]);

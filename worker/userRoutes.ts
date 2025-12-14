@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { Env } from './core-utils';
 const OSRS_BASE_URL = "https://secure.runescape.com/m=itemdb_oldschool/api";
+const OSRS_WIKI_PRICES_URL = "https://prices.runescape.wiki/api/v1/osrs";
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
     app.get('/api/ge/category', async (c) => {
         const categoryId = c.req.query('id');
@@ -35,7 +36,8 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             }
             const data = await response.json();
             return c.json({ success: true, data });
-        } catch (error) {
+        } catch (error)
+        {
             console.error('[WORKER ERROR] /api/ge/items:', error);
             return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
         }
@@ -71,6 +73,54 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             return c.json({ success: true, data });
         } catch (error) {
             console.error('[WORKER ERROR] /api/ge/graph:', error);
+            return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
+        }
+    });
+    // New Flipper Route
+    app.get('/api/flip/opportunities', async (c) => {
+        const minVolume = parseInt(c.req.query('minVolume') || '100000', 10);
+        const taxRate = parseFloat(c.req.query('taxRate') || '0.01'); // 1% default tax
+        const topN = parseInt(c.req.query('topN') || '100', 10);
+        try {
+            const [mappingRes, latestRes] = await Promise.all([
+                fetch(`${OSRS_WIKI_PRICES_URL}/mapping`),
+                fetch(`${OSRS_WIKI_PRICES_URL}/latest`)
+            ]);
+            if (!mappingRes.ok) throw new Error(`Failed to fetch mapping data: ${mappingRes.statusText}`);
+            if (!latestRes.ok) throw new Error(`Failed to fetch latest prices: ${latestRes.statusText}`);
+            const mappingData = await mappingRes.json();
+            const latestData = (await latestRes.json()).data;
+            const opportunities = [];
+            for (const item of mappingData) {
+                const id = item.id.toString();
+                const latestInfo = latestData[id];
+                if (latestInfo && latestInfo.high && latestInfo.low && latestInfo.highPriceVolume >= minVolume) {
+                    const buy_price = latestInfo.low;
+                    const sell_price = latestInfo.high;
+                    const net_sell = sell_price * (1 - taxRate);
+                    const profit_per = Math.floor(net_sell - buy_price);
+                    if (profit_per > 0) {
+                        const limit = item.limit || 0;
+                        const total_profit = profit_per * limit;
+                        opportunities.push({
+                            id: item.id,
+                            name: item.name,
+                            buy_price,
+                            sell_price,
+                            profit_per_item_gp: profit_per,
+                            buy_limit: limit,
+                            volume_24h: latestInfo.highPriceVolume,
+                            total_potential_profit_gp: total_profit,
+                        });
+                    }
+                }
+            }
+            const sortedOpportunities = opportunities
+                .sort((a, b) => b.total_potential_profit_gp - a.total_potential_profit_gp)
+                .slice(0, topN);
+            return c.json({ success: true, data: sortedOpportunities });
+        } catch (error) {
+            console.error('[WORKER ERROR] /api/flip/opportunities:', error);
             return c.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, 500);
         }
     });

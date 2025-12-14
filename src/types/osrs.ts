@@ -49,3 +49,16 @@ export interface GraphData {
   average: { [timestamp: string]: number };
 }
 export type GraphApiResponse = GraphData;
+export interface FlipOpportunity {
+  id: number;
+  name: string;
+  buy_price: number;
+  sell_price: number;
+  profit_per_item_gp: number;
+  buy_limit: number;
+  volume_24h: number;
+  total_potential_profit_gp: number;
+}
+export interface FlipOpportunitiesResponse {
+  data: FlipOpportunity[];
+}

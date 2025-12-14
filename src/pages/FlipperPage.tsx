@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AppLayout } from '@/components/ge/AppLayout';
 import { getFlipOpportunities } from '@/lib/api';
-import type { FlipOpportunity, FlipOpportunitiesResponse } from '@/types/osrs';
+import type { FlipOpportunity } from '@/types/osrs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,16 +38,12 @@ export function FlipperPage() {
     const [lastUpdated, setLastUpdated] = useState(new Date());
     const queryClient = useQueryClient();
     const navigate = useNavigate();
-    const { data, isLoading, error, isFetching } = useQuery<FlipOpportunitiesResponse>({
+    const { data, isLoading, error, isFetching } = useQuery({
         queryKey: ['flipper', minVolume, taxRate, topN],
         queryFn: () => getFlipOpportunities(minVolume, taxRate, topN),
         refetchInterval: 60000,
+        onSuccess: () => setLastUpdated(new Date()),
     });
-    useEffect(() => {
-        if (data) {
-            setLastUpdated(new Date());
-        }
-    }, [data]);
     const filteredData = useMemo(() => {
         return data?.data.filter(item =>
             item.name.toLowerCase().includes(searchTerm.toLowerCase())
